@@ -30,14 +30,14 @@ func TestLexer(t *testing.T) {
 		print(v.ToString())
 	}
 	println()
-	n, err := buildAST(res)
+	n, err := BuildAST(res)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
 	//printInOrder(n, 0)
 	println()
 	println()
-	eval, err := evalAST(n)
+	eval, err := EvalAST(n)
 	if err != nil {
 		t.Fatal(err.Error())
 	}

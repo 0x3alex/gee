@@ -28,7 +28,7 @@ func mergeNodes(nodes []*node) *node {
 	}
 }
 
-func buildAST(toks []tokens.TokenInterface[any]) (*node, error) {
+func BuildAST(toks []tokens.TokenInterface[any]) (*node, error) {
 	_, v, err := _buildAST(0, toks)
 	return v, err
 }

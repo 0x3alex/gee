@@ -158,17 +158,17 @@ func mathToMathOp(a, b tok, f func(a, b float64) float64) (tok, error) {
 
 }
 
-func evalAST(n *node) (tok, error) {
+func EvalAST(n *node) (tok, error) {
 	if n.left == nil && n.right == nil {
 		return n.t, nil
 	}
 	//var fn func(a, b float64) float64
-	left, lerr := evalAST(n.left)
+	left, lerr := EvalAST(n.left)
 	if lerr != nil {
 		return nil, lerr
 	}
 	operator := n.t.GetType()
-	right, rerr := evalAST(n.right)
+	right, rerr := EvalAST(n.right)
 	if rerr != nil {
 		return nil, rerr
 	}
