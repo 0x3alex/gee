@@ -10,13 +10,13 @@ type Int struct {
 	tokenT int
 }
 
-func NewInt(value string) (bool, Int) {
+func NewInt(value string) (bool, Float) {
 	if v, err := strconv.Atoi(value); err != nil {
-		return false, Int{}
+		return false, Float{}
 	} else {
-		return true, Int{
-			value:  v,
-			tokenT: TokInt,
+		return true, Float{
+			value:  float64(v),
+			tokenT: TokFloat,
 		}
 	}
 }
