@@ -1,4 +1,4 @@
-package internal
+package parser
 
 import (
 	"fmt"
@@ -7,28 +7,28 @@ import (
 	"github.com/0x3alex/gee/internal/tokens"
 )
 
-type node struct {
-	t           tokens.TokenInterface[any]
-	negate      bool
-	left, right *node
+type Node struct {
+	T           tokens.TokenInterface[any]
+	Negate      bool
+	Left, Right *Node
 }
 
-func tokenToNode(t tokens.TokenInterface[any]) *node {
-	return &node{
-		t: t,
+func tokenToNode(t tokens.TokenInterface[any]) *Node {
+	return &Node{
+		T: t,
 	}
 }
 
-func mergeNodes(nodes []*node) *node {
-	return &node{
-		t:      nodes[1].t,
-		negate: nodes[1].negate,
-		left:   nodes[0],
-		right:  nodes[2],
+func mergeNodes(nodes []*Node) *Node {
+	return &Node{
+		T:      nodes[1].T,
+		Negate: nodes[1].Negate,
+		Left:   nodes[0],
+		Right:  nodes[2],
 	}
 }
 
-func BuildAST(toks []tokens.TokenInterface[any]) (*node, error) {
+func BuildAST(toks []tokens.TokenInterface[any]) (*Node, error) {
 	_, v, err := _buildAST(0, toks)
 	return v, err
 }
@@ -49,12 +49,12 @@ func validateBraces(toks []tokens.TokenInterface[any]) bool {
 	return braces == 0
 }
 
-func _buildAST(i int, toks []tokens.TokenInterface[any]) (int, *node, error) {
+func _buildAST(i int, toks []tokens.TokenInterface[any]) (int, *Node, error) {
 	//exit if braces do not match
 	if !validateBraces(toks) {
 		return 0, nil, fmt.Errorf("(,) mismatch")
 	}
-	var accum []*node
+	var accum []*Node
 	idx := i
 	//this bool keeps track of single !
 	var neg bool
@@ -76,7 +76,7 @@ func _buildAST(i int, toks []tokens.TokenInterface[any]) (int, *node, error) {
 			if err != nil {
 				return idx, nil, err
 			}
-			n.negate = neg
+			n.Negate = neg
 			neg = false
 			idx = j
 			accum = append(accum, n)

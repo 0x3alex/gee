@@ -3,25 +3,27 @@ package internal
 import (
 	"testing"
 
+	"github.com/0x3alex/gee/internal/lexer"
+	"github.com/0x3alex/gee/internal/parser"
 	"github.com/0x3alex/gee/internal/tokens"
 )
 
-func printInOrder(n *node, lvl int) {
+func printInOrder(n *parser.Node, lvl int) {
 	if n == nil {
 		return
 	}
-	printInOrder(n.left, lvl+1)
+	printInOrder(n.Left, lvl+1)
 	for i := 0; i < lvl; i++ {
 		print(" ")
 	}
-	print(n.t.ToString())
+	print(n.T.ToString())
 	println()
-	printInOrder(n.right, lvl+1)
+	printInOrder(n.Right, lvl+1)
 }
 
 func TestLexer(t *testing.T) {
 	str := "((4.5 / 2) + 3)== 10"
-	l := NewLexer(str)
+	l := lexer.New(str)
 	res, err := l.Lex()
 	if err != nil {
 		t.Fatal(err.Error())
@@ -29,7 +31,7 @@ func TestLexer(t *testing.T) {
 	if len(res) != 11 {
 		t.Fatalf("Expected 10 but got %d", len(res))
 	}
-	n, err := BuildAST(res)
+	n, err := parser.BuildAST(res)
 	if err != nil {
 		t.Fatal(err.Error())
 	}

@@ -4,6 +4,8 @@ import (
 	"fmt"
 
 	"github.com/0x3alex/gee/internal"
+	"github.com/0x3alex/gee/internal/lexer"
+	"github.com/0x3alex/gee/internal/parser"
 	"github.com/0x3alex/gee/internal/tokens"
 )
 
@@ -15,12 +17,12 @@ import (
 @error - is set to an error if an error occured
 */
 func Eval(s string) (int, any, error) {
-	l := internal.NewLexer(s)
+	l := lexer.New(s)
 	res, err := l.Lex()
 	if err != nil {
 		return 0, nil, err
 	}
-	n, err := internal.BuildAST(res)
+	n, err := parser.BuildAST(res)
 	if err != nil {
 		return 0, nil, err
 	}

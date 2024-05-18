@@ -4,8 +4,12 @@ import (
 	"fmt"
 	"math"
 
+	"github.com/0x3alex/gee/internal/parser"
 	"github.com/0x3alex/gee/internal/tokens"
 )
+
+// synonym to write less
+type tok tokens.TokenInterface[any]
 
 func isTokNum(a tok) bool {
 	return a.GetType() == tokens.TokInt || a.GetType() == tokens.TokFloat
@@ -167,17 +171,17 @@ func mathToMathOp(a, b tok, f func(a, b float64) float64) (tok, error) {
 from bottom up, traverse to the leaves and then eval
 left -> right -> root
 */
-func EvalAST(n *node) (tok, error) {
-	if n.left == nil && n.right == nil {
-		return n.t, nil
+func EvalAST(n *parser.Node) (tok, error) {
+	if n.Left == nil && n.Right == nil {
+		return n.T, nil
 	}
 	//var fn func(a, b float64) float64
-	left, lerr := EvalAST(n.left)
+	left, lerr := EvalAST(n.Left)
 	if lerr != nil {
 		return nil, lerr
 	}
-	operator := n.t.GetType()
-	right, rerr := EvalAST(n.right)
+	operator := n.T.GetType()
+	right, rerr := EvalAST(n.Right)
 	if rerr != nil {
 		return nil, rerr
 	}
@@ -203,9 +207,9 @@ func EvalAST(n *node) (tok, error) {
 		var err error
 		//special case for string
 		if isTokStr(left) || isTokStr(right) {
-			t, err = strToBoolOp(left, right, eq, n.negate)
+			t, err = strToBoolOp(left, right, eq, n.Negate)
 		} else {
-			t, err = mathToBoolOp(left, right, eq, n.negate)
+			t, err = mathToBoolOp(left, right, eq, n.Negate)
 		}
 		return t, err
 	case tokens.TokNeq:
@@ -213,32 +217,32 @@ func EvalAST(n *node) (tok, error) {
 		var err error
 		//special case for string
 		if isTokStr(left) || isTokStr(right) {
-			t, err = strToBoolOp(left, right, neq, n.negate)
+			t, err = strToBoolOp(left, right, neq, n.Negate)
 		} else {
-			t, err = mathToBoolOp(left, right, neq, n.negate)
+			t, err = mathToBoolOp(left, right, neq, n.Negate)
 		}
 		return t, err
 	case tokens.TokGt:
-		t, err := mathToBoolOp(left, right, gt, n.negate)
+		t, err := mathToBoolOp(left, right, gt, n.Negate)
 		return t, err
 	case tokens.TokGtEq:
-		t, err := mathToBoolOp(left, right, gteq, n.negate)
+		t, err := mathToBoolOp(left, right, gteq, n.Negate)
 		return t, err
 	case tokens.TokLt:
-		t, err := mathToBoolOp(left, right, lt, n.negate)
+		t, err := mathToBoolOp(left, right, lt, n.Negate)
 		return t, err
 	case tokens.TokLtEq:
-		t, err := mathToBoolOp(left, right, lteq, n.negate)
+		t, err := mathToBoolOp(left, right, lteq, n.Negate)
 		return t, err
 	case tokens.TokAnd:
-		t, err := boolToBoolOp(left, right, and, n.negate)
+		t, err := boolToBoolOp(left, right, and, n.Negate)
 		return t, err
 	case tokens.TokOr:
-		t, err := boolToBoolOp(left, right, or, n.negate)
+		t, err := boolToBoolOp(left, right, or, n.Negate)
 		return t, err
 	case tokens.TokNot:
-		return nil, fmt.Errorf("%s is not an operator", n.t.ToString())
+		return nil, fmt.Errorf("%s is not an operator", n.T.ToString())
 	default:
-		return nil, fmt.Errorf("%s is not an operator", n.t.ToString())
+		return nil, fmt.Errorf("%s is not an operator", n.T.ToString())
 	}
 }

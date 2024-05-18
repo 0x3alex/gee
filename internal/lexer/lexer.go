@@ -1,4 +1,4 @@
-package internal
+package lexer
 
 import (
 	"fmt"
@@ -17,10 +17,7 @@ type Lexer struct {
 	text    string
 }
 
-// synonym to write less
-type tok tokens.TokenInterface[any]
-
-func NewLexer(text string) *Lexer {
+func New(text string) *Lexer {
 	return &Lexer{
 		current: 0,
 		text:    text,
