@@ -1,8 +1,9 @@
 package internal
 
 import (
-	"fmt"
 	"testing"
+
+	"github.com/0x3alex/gee/internal/tokens"
 )
 
 func printInOrder(n *node, lvl int) {
@@ -19,27 +20,24 @@ func printInOrder(n *node, lvl int) {
 }
 
 func TestLexer(t *testing.T) {
-	//str := "'hi' == 'hi'" //"((1==1)&&(1.5+1>3)) || !(1 == 1)" //"1.5+(2/(4*5))-0.6"
-	str := "2^0.5" //"((('hi' == 'hey') || (1.5+2 > 1)) || !(2>2))&&False"
+	str := "((4.5 / 2) + 3)== 10"
 	l := NewLexer(str)
 	res, err := l.Lex()
 	if err != nil {
 		t.Fatal(err.Error())
 	}
-	for _, v := range res {
-		print(v.ToString())
+	if len(res) != 11 {
+		t.Fatalf("Expected 10 but got %d", len(res))
 	}
-	println()
 	n, err := BuildAST(res)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
-	//printInOrder(n, 0)
-	println()
-	println()
 	eval, err := EvalAST(n)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
-	fmt.Printf("evalAST(n).ToString(): %s\n", eval.ToString())
+	if eval.GetType() != tokens.TokFalse {
+		t.Fatalf("Expected false but got %s", eval.ToString())
+	}
 }

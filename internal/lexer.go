@@ -2,15 +2,22 @@ package internal
 
 import (
 	"fmt"
+	"unicode"
 
 	"github.com/0x3alex/gee/internal/tokens"
 )
 
+/*
+@current - the current position in the text
+
+@text - the text we want to lex
+*/
 type Lexer struct {
 	current int
 	text    string
 }
 
+// synonym to write less
 type tok tokens.TokenInterface[any]
 
 func NewLexer(text string) *Lexer {
@@ -21,6 +28,7 @@ func NewLexer(text string) *Lexer {
 }
 
 func (l *Lexer) getNext() {
+	//make sure we are not out of bounds
 	if l.current >= len(l.text) {
 		return
 	}
@@ -60,6 +68,15 @@ func (l *Lexer) fetchString() (string, error) {
 	}
 	return "", fmt.Errorf("no ' found")
 }
+
+/*
+	The functions named fetchXXX proceed to take from the string until it the current rune
+	is not a valid rune for the type.
+
+	For bool it would proceed to take, if the text is ..==.., the first = and then as long as it
+	is a valid sign for a bool operation. So it would return ==
+
+*/
 
 func (l *Lexer) fetchBool() string {
 	var agg string
@@ -108,6 +125,12 @@ func (l *Lexer) fetchNum() (bool, string, error) {
 	return dot, agg, nil
 }
 
+/*
+The functions named matchXXX take in the read string from fetch for datatypes that can be mapped
+to multiple tokens.
+
+True and False are considered Var before the machting because its just a sequence of letters.
+*/
 func matchVarToTok(s string) (tokens.TokenInterface[any], error) {
 	switch s {
 	case "True":
@@ -146,16 +169,18 @@ func matchBoolToTok(s string) (tokens.TokenInterface[any], error) {
 
 func (l *Lexer) Lex() ([]tokens.TokenInterface[any], error) {
 	var result []tokens.TokenInterface[any]
-	ok := true
 	for l.hasNext() {
 		current := rune(l.text[l.current])
-		if current == ' ' {
+		//skip whitespaces
+		if unicode.IsSpace(current) {
 			l.getNext()
 			continue
 		}
-		if !ok {
-			return nil, fmt.Errorf("error while reading the input")
-		}
+		/*
+			match the current rune. its either a single rune, which can be mapped by the first cases.
+			if its a sequence we go into the default case an call the according fetchXX function and
+			the according matchXX function (if needed)
+		*/
 		switch current {
 		case '(':
 			result = append(result, tokens.NewOpen())

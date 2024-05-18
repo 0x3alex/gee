@@ -89,6 +89,11 @@ func boolToBoolOp(a, b tok, f func(a, b bool) bool, negate bool) (tok, error) {
 	return tokens.NewFalse(), nil
 }
 
+/*
+matchXX are helper functions to reduce redunancy in the code
+it converts to the needed type for the operation and executes the function.
+if the result needs to be negated, its handled here aswell
+*/
 func mathToBoolOp(a, b tok, f func(a, b float64) bool, negate bool) (tok, error) {
 	if !isTokNum(a) || !isTokNum(b) {
 		return nil, fmt.Errorf("comparisons can only be done between numbers. left was %s right was %s", a.ToString(), b.ToString())
@@ -158,6 +163,10 @@ func mathToMathOp(a, b tok, f func(a, b float64) float64) (tok, error) {
 
 }
 
+/*
+from bottom up, traverse to the leaves and then eval
+left -> right -> root
+*/
 func EvalAST(n *node) (tok, error) {
 	if n.left == nil && n.right == nil {
 		return n.t, nil
@@ -172,6 +181,7 @@ func EvalAST(n *node) (tok, error) {
 	if rerr != nil {
 		return nil, rerr
 	}
+	//match the operator
 	switch operator {
 	case tokens.TokAdd:
 		t, err := mathToMathOp(left, right, add)
@@ -191,6 +201,7 @@ func EvalAST(n *node) (tok, error) {
 	case tokens.TokEq:
 		var t tok
 		var err error
+		//special case for string
 		if isTokStr(left) || isTokStr(right) {
 			t, err = strToBoolOp(left, right, eq, n.negate)
 		} else {
@@ -200,6 +211,7 @@ func EvalAST(n *node) (tok, error) {
 	case tokens.TokNeq:
 		var t tok
 		var err error
+		//special case for string
 		if isTokStr(left) || isTokStr(right) {
 			t, err = strToBoolOp(left, right, neq, n.negate)
 		} else {

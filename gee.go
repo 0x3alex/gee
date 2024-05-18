@@ -7,26 +7,35 @@ import (
 	"github.com/0x3alex/gee/internal/tokens"
 )
 
-func Eval(s string) (bool, any, error) {
+/*
+@int - 0, if it is a number, 1 if it is a bool, 2 if it is a string
+
+@any - the value
+
+@error - is set to an error if an error occured
+*/
+func Eval(s string) (int, any, error) {
 	l := internal.NewLexer(s)
 	res, err := l.Lex()
 	if err != nil {
-		return false, nil, err
+		return 0, nil, err
 	}
 	n, err := internal.BuildAST(res)
 	if err != nil {
-		return false, nil, err
+		return 0, nil, err
 	}
 	if n == nil {
-		return false, nil, fmt.Errorf("ast returned nil")
+		return 0, nil, fmt.Errorf("ast returned nil")
 	}
 	result, err := internal.EvalAST(n)
 	if err != nil {
-		return false, nil, err
+		return 0, nil, err
 	}
-	var isBool bool
+	var t int
 	if result.GetType() == tokens.TokTrue || result.GetType() == tokens.TokFalse {
-		isBool = true
+		t = 1
+	} else if result.GetType() == tokens.TokStr {
+		t = 2
 	}
-	return isBool, result.GetValue(), nil
+	return t, result.GetValue(), nil
 }
