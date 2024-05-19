@@ -52,6 +52,15 @@ func isBool(r rune) bool {
 	return r == '&' || r == '|' || r == '!' || r == '>' || r == '<' || r == '='
 }
 
+/*
+	The functions named fetchXXX proceed to take from the string until it the current rune
+	is not a valid rune for the type.
+
+	For bool it would proceed to take, if the text is ..==.., the first = and then as long as it
+	is a valid sign for a bool operation. So it would return ==
+
+*/
+
 func (l *Lexer) fetchString() (string, error) {
 	var agg string
 	l.getNext() //skip the first '
@@ -65,15 +74,6 @@ func (l *Lexer) fetchString() (string, error) {
 	}
 	return "", fmt.Errorf("no ' found")
 }
-
-/*
-	The functions named fetchXXX proceed to take from the string until it the current rune
-	is not a valid rune for the type.
-
-	For bool it would proceed to take, if the text is ..==.., the first = and then as long as it
-	is a valid sign for a bool operation. So it would return ==
-
-*/
 
 func (l *Lexer) fetchBool() string {
 	var agg string
@@ -231,6 +231,8 @@ func (l *Lexer) Lex() ([]tokens.TokenInterface[any], error) {
 					result = append(result, v)
 				}
 				continue
+			} else if current == '[' {
+
 			} else {
 				return nil, fmt.Errorf("unsupported rune %s", string(current))
 			}
