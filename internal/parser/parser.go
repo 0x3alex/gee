@@ -2,7 +2,6 @@ package parser
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/0x3alex/gee/internal/tokens"
 )
@@ -111,7 +110,7 @@ func _buildAST(i int, toks []tokens.TokenInterface[any]) (int, *Node, error) {
 	}
 	//if we close and do not have 1 ore 3 elements, then the expression is not valid
 	if len(accum) == 2 || len(accum) > 3 || len(accum) == 0 {
-		log.Fatal("Expression can only contain 1 or 3 elements")
+		return 0, nil, fmt.Errorf("expression can only contain 1 or 3 elements")
 	}
 	//if we have an expression pending, merge it
 	if len(accum) == 3 {
