@@ -36,7 +36,9 @@ func Eval(s string) (int, any, error) {
 	var t int
 	if result.GetType() == tokens.TokTrue || result.GetType() == tokens.TokFalse {
 		t = 1
-	} else if result.GetType() == tokens.TokStr {
+	} else if result.GetType() == tokens.TokFloat {
+		t = 0
+	} else {
 		t = 2
 	}
 	return t, result.GetValue(), nil
